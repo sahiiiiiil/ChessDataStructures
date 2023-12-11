@@ -17,8 +17,8 @@ public class Board {
         }
     }
     public void remove(Piece piece){ //removes piece from square on chessboard array
-        int oldX = Piece.getXCord(); 
-        int oldY = Piece.getYCord();
+        int oldX = piece.getXCord();
+        int oldY = piece.getYCord();
         if(InBounds(oldX,oldY)){
             chessBoard[oldX][oldY] = null;
         }
