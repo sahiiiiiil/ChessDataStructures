@@ -22,6 +22,9 @@ public class Piece {
         this.yCord = yLocation;
         chessBoard.place(this, xLocation, yLocation);
     }
+    public boolean canMoveTo(int xPosition, int yPosition){
+        return canMove(xPosition, yPosition);
+    }
     public boolean canMove(int xPosition, int yPosition){
         if (chessBoard.InBounds(xPosition, yPosition)){
             Piece location = chessBoard.Occupied(xPosition, yPosition);

@@ -1,4 +1,10 @@
-public class Board {
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+
+public class Board extends JPanel {
     private Piece[][] chessBoard;
     public Board(int x, int y){
         chessBoard = new Piece[x][y];
@@ -29,6 +35,48 @@ public class Board {
             chessBoard[x][y] = chessPiece;
         }
     }
+    public void paint(Graphics g) throws IOException {
+        boolean white = true;
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                if (white) {
+                    g.setColor(new Color(235, 235, 208));
+                } else {
+                    g.setColor(new Color(119, 148, 85));
+                }
+                g.fillRect(x * 90, y * 90, 90, 90);
+                white = !white;
+            }
+
+
+        }
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                if(Occupied(x,y).getColor() == 1) { // if white
+                    if (chessBoard[x][y] instanceof Knight) {
+                        g.drawImage(ImageIO.read(new File("src/wKnight.png")), x * 90, y*90, this);
+                    }
+                    if (chessBoard[x][y] instanceof Bishop) {
+                        g.drawImage(ImageIO.read(new File("src/wBishop.png")), x * 90, y*90, this);
+                    }
+                    if (chessBoard[x][y] instanceof Rook) {
+                        g.drawImage(ImageIO.read(new File("src/wRook.png")), x * 90, y*90, this);
+                    }
+                    if (chessBoard[x][y] instanceof Queen) {
+                        g.drawImage(ImageIO.read(new File("src/wQueen.png")), x * 90, 90, this);
+                    }
+                    if (chessBoard[x][y] instanceof Pawn) {
+                        g.drawImage(ImageIO.read(new File("src/wPawn.png")), x * 90, 90, this);
+                    }
+                    if (chessBoard[x][y] instanceof King) {
+                        g.drawImage(ImageIO.read(new File("src/wKing.png")), x * 90, 90, this);
+                    }
+                }
+
+            }
+        }
+    }
+
 
     public int getXLen(){
         return chessBoard[0].length;
