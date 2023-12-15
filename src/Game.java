@@ -1,22 +1,153 @@
 import java.awt.*;
 import java.util.*;
 public class Game {
-    private int Player;
+    private int player;
     private LinkedList<Piece> blackPieces;
     private LinkedList<Piece> whitePieces;
-    private int currentPlayer;
     private King blackKing;
     private Board chessBoard;
     private King whiteKing;
+    private Queen blackQueen;
+    private Queen whiteQueen;
+    private Rook blackRookL;
+    private Rook blackRookR;
+    private Rook whiteRookL;
+    private Rook whiteRookR;
+    private Bishop whiteBishopL;
+    private Bishop whiteBishopR;
+    private Bishop blackBishopL;
+    private Bishop blackBishopR;
+    private Knight blackKnightL;
+    private Knight blackKnightR;
+    private Knight whiteKnightL;
+    private Knight whiteKnightR;
+    private Pawn blackPawn1;
+    private Pawn blackPawn2;
+    private Pawn blackPawn3;
+    private Pawn blackPawn4;
+    private Pawn blackPawn5;
+    private Pawn blackPawn6;
+    private Pawn blackPawn7;
+    private Pawn blackPawn8;
+    private Pawn whitePawn1;
+    private Pawn whitePawn2;
+    private Pawn whitePawn3;
+    private Pawn whitePawn4;
+    private Pawn whitePawn5;
+    private Pawn whitePawn6;
+    private Pawn whitePawn7;
+    private Pawn whitePawn8;
+    Scanner userInput = new Scanner(System.in);
     public Game(){
         chessBoard = new Board(8,8);
-        currentPlayer = 1;
         blackPieces = new LinkedList<Piece>();
         whitePieces = new LinkedList<Piece>();
-        blackKing = new King(chessBoard, 0, 7, 4);
-        whiteKing = new King(chessBoard, 1, 0, 4);
+        GamePaint game = new GamePaint();
+        blackKing = new King(chessBoard, 0, 4, 7);
+
+        whiteKing = new King(chessBoard, 1, 4, 0);
+
+        blackQueen = new Queen(chessBoard, 0, 3, 7);
+
+        whiteQueen = new Queen(chessBoard, 1, 3, 0);
+
+        blackRookL = new Rook(chessBoard, 0, 0, 7);
+        blackRookR = new Rook(chessBoard, 0, 7, 7);
+
+        whiteRookL = new Rook(chessBoard, 1, 0, 0); //left side rook
+        whiteRookR = new Rook(chessBoard, 1, 7, 0);// right side rook
+
+        whiteBishopL = new Bishop(chessBoard, 1, 2, 0); //left side bishop
+        whiteBishopR = new Bishop(chessBoard, 1, 5, 0);// right side bishop
+
+        blackBishopL = new Bishop(chessBoard, 0, 2, 7); //left side bishop
+        blackBishopR = new Bishop(chessBoard, 0, 5, 7);// right side bishop
+
+        blackKnightL = new Knight(chessBoard, 0, 1, 7); //left side knight
+        blackKnightR = new Knight(chessBoard, 0, 6, 7);// right side knight
+
+        whiteKnightL = new Knight(chessBoard, 1, 1, 0); //left side knight
+        whiteKnightR = new Knight(chessBoard, 1, 6, 0);// right side knight
+
+        blackPawn1 = new Pawn(chessBoard, 0, 0, 6);
+        blackPawn2 = new Pawn(chessBoard, 0, 1, 6);
+        blackPawn3 = new Pawn(chessBoard, 0, 2, 6);
+        blackPawn4 = new Pawn(chessBoard, 0, 3, 6);
+        blackPawn5 = new Pawn(chessBoard, 0, 4, 6);
+        blackPawn6 = new Pawn(chessBoard, 0, 5, 6);
+        blackPawn7 = new Pawn(chessBoard, 0, 6, 6);
+        blackPawn8 = new Pawn(chessBoard, 0, 7, 6);
+
+        whitePawn1 = new Pawn(chessBoard, 1, 0, 1);
+        whitePawn2 = new Pawn(chessBoard, 1, 1, 1);
+        whitePawn3 = new Pawn(chessBoard, 1, 2, 1);
+        whitePawn4 = new Pawn(chessBoard, 1, 3, 1);
+        whitePawn5 = new Pawn(chessBoard, 1, 4, 1);
+        whitePawn6 = new Pawn(chessBoard, 1, 5, 1);
+        whitePawn7 = new Pawn(chessBoard, 1, 6, 1);
+        whitePawn8 = new Pawn(chessBoard, 1, 7, 1);
+
         blackPieces.add(blackKing);
+        blackPieces.add(blackQueen);
+        whitePieces.add(whiteQueen);
         whitePieces.add(whiteKing);
+
+        blackPieces.add(blackRookL);
+        blackPieces.add(blackRookR);
+
+        whitePieces.add(whiteRookR);
+        whitePieces.add(whiteRookL);
+
+        blackPieces.add(blackBishopR);
+        blackPieces.add(blackBishopL);
+        whitePieces.add(whiteBishopR);
+        whitePieces.add(whiteBishopL);
+
+        whitePieces.add(whiteKnightR);
+        whitePieces.add(whiteKnightL);
+        blackPieces.add(blackKnightR);
+        blackPieces.add(blackKnightL);
+    }
+    public void Run(){
+
+        System.out.println(staleMate(player));
+        System.out.println(checkMate(player));
+        while (!gameFinished(player)){
+            System.out.println(1);
+            System.out.print("Which piece to move? X-loc: ");
+            int nextX = userInput.nextInt();
+            System.out.print("Y-loc: ");
+            int nextY = userInput.nextInt();
+
+            Piece target = chessBoard.Occupied(nextX, nextY);
+            if (target == null){
+                System.out.println("That location is invalid try again. X-loc:");
+            }
+            else if (target.getColor() != player){
+                System.out.println("That is not your piece");
+            }
+            else {
+                System.out.print("Where to move this piece? x-loc: ");
+                nextX = userInput.nextInt();
+                System.out.print("Y-loc: ");
+                nextY = userInput.nextInt();
+                System.out.println(target);
+                if (target.canMoveTo(nextX, nextY)){
+                    target.Move(nextX, nextY);
+                    System.out.println("new x:" + target.getXCord());
+                    System.out.println("new y: " + target.getYCord());
+                }
+                else {
+                    System.out.println("Cannot move there");
+                }
+                if(player == 1){
+                    player = 0;
+                } else{
+                    player = 1;
+                }
+            }
+        }
+
     }
     public boolean checkMate(int color){
         King king1;
@@ -41,16 +172,19 @@ public class Game {
         LinkedList<Piece> attackers;
         King king1;
         if (color == 0){
-            attackers = whitePieces;
+            attackers = blackPieces;
             king1 = blackKing;
         } else{
-            attackers = blackPieces;
+            attackers = whitePieces;
             king1 = whiteKing;
         }
         for (Piece attacker: attackers){
+            System.out.println(attacker.getYCord());
             if (attacker.canMoveTo(king1.getXCord(), king1.getYCord())){
+                System.out.println(attacker.getYCord());
                 return true;
             }
+
         }
         return false;
 
@@ -71,6 +205,7 @@ public class Game {
                 }
             }
         }
+        return false;
     }
     public boolean staleMate(int color){
         if (!(isCheck(color)) && !hasMoves(color)){

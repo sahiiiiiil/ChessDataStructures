@@ -13,14 +13,14 @@ public class Pawn extends Piece {
             move1 = 1;
             move2 = 2;
         }
-        if(x - this.getXCord() == move1){
-            if(y == this.getYCord() && other == null){ //checks there's no other piece occupying the square and that the y cord of the move is the same as the current because pawns can't move diagonally
+        if(y - this.getYCord() == move1){
+            if(x == this.getXCord() && other == null){ //checks there's no other piece occupying the square and that the y cord of the move is the same as the current because pawns can't move diagonally
                 return true;
             }
         }
         if(!moved){
-            if (x - this.getXCord() == move2){ // because x checks the rows and pawns can only move up rows they can't switch columns
-                if (y == this.getYCord() && other == null){
+            if (y - this.getYCord() == move2){ // because x checks the rows and pawns can only move up rows they can't switch columns
+                if (x == this.getXCord() && other == null){
                     return true;
                 }
             }
