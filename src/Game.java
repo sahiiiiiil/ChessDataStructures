@@ -1,6 +1,6 @@
 import java.awt.*;
 import java.util.*;
-public class Game {
+public class Game { //the way the board is layed out the 0 coordinate for y starts at the top to bottom and x goes right to left
     private int player;
     private LinkedList<Piece> blackPieces;
     private LinkedList<Piece> whitePieces;
@@ -112,8 +112,10 @@ public class Game {
 
         System.out.println(staleMate(player));
         System.out.println(checkMate(player));
+        player = 1;
         while (!gameFinished(player)){
-            System.out.println(1);
+            System.out.println(player + ": 1 is white 0 is black");
+
             System.out.print("Which piece to move? X-loc: ");
             int nextX = userInput.nextInt();
             System.out.print("Y-loc: ");
@@ -133,9 +135,29 @@ public class Game {
                 nextY = userInput.nextInt();
                 System.out.println(target);
                 if (target.canMoveTo(nextX, nextY)){
+                    System.out.println("nextY:" + nextY);
                     target.Move(nextX, nextY);
-                    System.out.println("new x:" + target.getXCord());
-                    System.out.println("new y: " + target.getYCord());
+                    for(int i = 0; i<8;i++){
+                        for(int j =0; j <8;j++){
+                            if(chessBoard.Occupied(j, i) == null){
+                                System.out.print("-");
+                            }
+                            if(chessBoard.Occupied(j, i) instanceof Pawn){
+                                System.out.print("p");
+                            }if(chessBoard.Occupied(j, i) instanceof Knight){
+                                System.out.print("n");
+                            }if(chessBoard.Occupied(j, i) instanceof Bishop){
+                                System.out.print("b");
+                            }if(chessBoard.Occupied(j, i) instanceof Queen){
+                                System.out.print("q");
+                            }if(chessBoard.Occupied(j, i) instanceof King){
+                                System.out.print("k");
+                            }if(chessBoard.Occupied(j, i) instanceof Rook){
+                                System.out.print("r");
+                            }
+                        }
+                        System.out.println();
+                    }
                 }
                 else {
                     System.out.println("Cannot move there");
@@ -145,6 +167,8 @@ public class Game {
                 } else{
                     player = 1;
                 }
+                System.out.println("new x:" + target.getXCord());
+                System.out.println("new y: " + target.getYCord());
             }
         }
 

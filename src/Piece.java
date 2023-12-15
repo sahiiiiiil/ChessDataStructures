@@ -41,6 +41,8 @@ public class Piece {
         }
         chessBoard.place(this, xLocation, yLocation);
         moved = true;
+        xCord = xLocation;
+        yCord = yLocation;
     }
     public boolean onBoard(){
         if (chessBoard.InBounds(xCord, yCord)) {

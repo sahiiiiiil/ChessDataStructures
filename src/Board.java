@@ -26,6 +26,8 @@ public class Board extends JPanel {
     public void remove(Piece piece){ //removes piece from square on chessboard array
         int oldX = piece.getXCord();
         int oldY = piece.getYCord();
+
+
         if(InBounds(oldX,oldY)){
             chessBoard[oldX][oldY] = null;
         }
