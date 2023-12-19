@@ -38,6 +38,65 @@ public class Board extends JPanel {
             chessBoard[x][y] = chessPiece;
         }
     }
+    public double evaluate(){
+        double eval = 0;
+        for(int i = 0; i <chessBoard.length;i++){
+            for(int j = 0; j < chessBoard[0].length; j++){
+               if (chessBoard[j][i] instanceof Pawn){
+                   if (Occupied(j, i).getColor() == 0){
+                       if(3<=j&&j<=5 && (i ==3|| i==4)){
+                           eval -= 1.2; // center pawn is stronger
+                       } else {
+                           eval--;
+                       }
+                   } else{
+                       if(3<=j&&j<=5 && (i ==3|| i==4)){
+                           eval += 1.2; // center pawn is stronger
+                       } else {
+                           eval++;
+                       }
+                   }
+               }
+               if (chessBoard[j][i] instanceof Knight){
+                    if (Occupied(j, i).getColor() == 3){
+                        eval-= 3;
+                    } else{
+                        eval+= 3;
+                    }
+               }
+               if (chessBoard[j][i] instanceof Bishop){
+                    if (Occupied(j, i).getColor() == 0){
+                        eval-= 3.1; //bishop slightly better than knight
+                    } else{
+                        eval+=3.1;
+                    }
+               }
+                if (chessBoard[j][i] instanceof Rook){
+                    if (Occupied(j, i).getColor() == 0){
+                        eval-= 5;
+                    } else{
+                        eval+= 5;
+                    }
+                }
+                if (chessBoard[j][i] instanceof Queen){
+                    if (Occupied(j, i).getColor() == 0){
+                        eval-= 9;
+                    } else{
+                        eval+= 9;
+                    }
+                }
+                if (chessBoard[j][i] instanceof King){
+                    if (Occupied(j, i).getColor() == 0){
+                        eval-= 200;
+                    } else{
+                        eval+= 200;
+                    }
+                }
+            }
+        }
+        return eval;
+    }
+
 
 
 

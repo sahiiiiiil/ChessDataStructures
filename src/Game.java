@@ -37,12 +37,13 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
     private Pawn whitePawn6;
     private Pawn whitePawn7;
     private Pawn whitePawn8;
+    private GamePaint game;
     Scanner userInput = new Scanner(System.in);
     public Game(){
+
         chessBoard = new Board(8,8);
         blackPieces = new LinkedList<Piece>();
         whitePieces = new LinkedList<Piece>();
-        GamePaint game = new GamePaint();
         blackKing = new King(chessBoard, 0, 4, 7);
 
         whiteKing = new King(chessBoard, 1, 4, 0);
@@ -107,14 +108,71 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
         whitePieces.add(whiteKnightL);
         blackPieces.add(blackKnightR);
         blackPieces.add(blackKnightL);
+        blackPieces.add(blackPawn1);
+        blackPieces.add(blackPawn2);
+        blackPieces.add(blackPawn3);
+        blackPieces.add(blackPawn4);
+        blackPieces.add(blackPawn5);
+        blackPieces.add(blackPawn6);
+        blackPieces.add(blackPawn7);
+        blackPieces.add(blackPawn8);
+
+        whitePieces.add(whitePawn1);
+        whitePieces.add(whitePawn2);
+        whitePieces.add(whitePawn3);
+        whitePieces.add(whitePawn4);
+        whitePieces.add(whitePawn5);
+        whitePieces.add(whitePawn6);
+        whitePieces.add(whitePawn7);
+        whitePieces.add(whitePawn8);
+        for(int i = 0; i<8;i++){
+            for(int j =0; j <8;j++){
+
+                if(chessBoard.Occupied(j, i) == null){
+                    System.out.print("-");
+                }
+                if(chessBoard.Occupied(j, i) instanceof Pawn){
+                    System.out.print("p");
+                }if(chessBoard.Occupied(j, i) instanceof Knight){
+                    System.out.print("n");
+                }if(chessBoard.Occupied(j, i) instanceof Bishop){
+                    System.out.print("b");
+                }if(chessBoard.Occupied(j, i) instanceof Queen){
+                    System.out.print("q");
+                }if(chessBoard.Occupied(j, i) instanceof King){
+                    System.out.print("k");
+                }if(chessBoard.Occupied(j, i) instanceof Rook){
+                    System.out.print("r");
+                }
+            }
+            System.out.println();
+        }
+        game = new GamePaint(chessBoard);
     }
     public void Run(){
+        boolean color;
+        if(player ==1){
+            color = true;
+        } else{
+            color = false;
+        }
 
-        System.out.println(staleMate(player));
         System.out.println(checkMate(player));
+
         player = 1;
+
         while (!gameFinished(player)){
+            game.removeAll();
+            game.revalidate();
+            game.repaint();
+            if(player ==1){
+                color = true;
+            } else{
+                color = false;
+            }
             System.out.println(player + ": 1 is white 0 is black");
+//            System.out.println("Mini Max:" +miniMax(4, color, chessBoard));
+//            System.out.println("Evaluate:" + chessBoard.evaluate());
 
             System.out.print("Which piece to move? X-loc: ");
             int nextX = userInput.nextInt();
@@ -137,8 +195,14 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
                 if (target.canMoveTo(nextX, nextY)){
                     System.out.println("nextY:" + nextY);
                     target.Move(nextX, nextY);
+                    for(int i = 0;i<8;i++){
+                        for(int j = 0; j<8;j++){
+                            System.out.println("square: " + j + i + blackQueen.canMoveTo(j,i));
+                        }
+                    }
                     for(int i = 0; i<8;i++){
                         for(int j =0; j <8;j++){
+
                             if(chessBoard.Occupied(j, i) == null){
                                 System.out.print("-");
                             }
@@ -158,7 +222,9 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
                         }
                         System.out.println();
                     }
+
                 }
+
                 else {
                     System.out.println("Cannot move there");
                 }
@@ -176,19 +242,9 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
     public boolean checkMate(int color){
         King king1;
         if(isCheck(color)){
-            if (color == 0){
-                king1 = blackKing;
-            } else {
-                king1 = whiteKing;
+            if(!hasMoves(color)) {
+                return true;
             }
-            for(int x = 0; x<chessBoard.getXLen(); x++){
-                for(int y = 0; y < chessBoard.getYLen(); y++){
-                    if (king1.canMoveTo(x,y)){
-                        return false;
-                    }
-                }
-            }
-            return true;
         }
         return false;
     }
@@ -203,7 +259,6 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
             king1 = whiteKing;
         }
         for (Piece attacker: attackers){
-            System.out.println(attacker.getYCord());
             if (attacker.canMoveTo(king1.getXCord(), king1.getYCord())){
                 System.out.println(attacker.getYCord());
                 return true;
@@ -214,17 +269,38 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
 
     }
     public boolean hasMoves(int color){
-        LinkedList<Piece> pieces;
-        if(color == 0){
-            pieces = blackPieces;
-        } else{
-            pieces = whitePieces;
+        int oldX, oldY;
+        Piece target;
+        LinkedList<Piece> checkPieces;
+
+        if (player == 0) {
+            checkPieces = blackPieces;
         }
-        for (Piece piece: pieces ){
-            for(int x = 0; x<chessBoard.getXLen(); x++){
-                for(int y = 0; y < chessBoard.getYLen(); y++){
-                    if (piece.canMoveTo(x,y)){
-                        return true;
+        else {
+            checkPieces = whitePieces;
+        }
+        for (int x = 0; x < 8; x++){
+            for (int y = 0; y < 8; y++){
+                // If king is still in check, keep finding moves.
+                for (Piece currentPiece : checkPieces){
+                    if (currentPiece.canMoveTo(x, y)){
+                        target = chessBoard.Occupied(x, y); //store the piece being taken if there is one
+                        oldX = currentPiece.getXCord();
+                        oldY = currentPiece.getYCord();
+                        currentPiece.Move(x, y); //
+
+                        if (!isCheck(player)){
+                            currentPiece.Move(oldX, oldY); // put pieces back
+                            if (target != null) {
+                                target.Move(x, y);
+                            }
+                            return true;
+                        } else {
+                            currentPiece.Move(oldX, oldY); // current piece goes back since we aren't trying to change naything just see if possible
+                            if (target != null) {
+                                target.Move(x, y); // taken piece goes back
+                            }
+                        }
                     }
                 }
             }
@@ -244,6 +320,70 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
             return true;
         }
         return false;
+    }
+    public double miniMax(int depth, boolean maximizing_player, Board board){
+        LinkedList<Piece> pieces;
+        int oldX;
+        int oldY;
+        Piece target;
+        double currentEval;
+        if(depth == 0){
+            return board.evaluate();
+        }
+        if(maximizing_player) {
+            pieces = whitePieces;
+            double maxEval = -1000;
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    for (Piece currentPiece : pieces) {
+                        if (currentPiece.canMoveTo(j, i)) {
+                            oldX = currentPiece.getXCord();
+                            oldY = currentPiece.getYCord();
+                            target = chessBoard.Occupied(j, i);
+                            currentPiece.Move(j, i);
+
+                            currentEval = miniMax(depth - 1, false, board); //returns best previous move for black
+                            if (currentEval > maxEval) {
+                                maxEval = currentEval;
+                            }
+                            currentPiece.Move(oldX, oldY);
+                            if (target != null) {
+                                target.Move(j, i);
+                            }
+                        }
+                    }
+                }
+            }
+            return maxEval;
+        } else {
+            pieces = blackPieces;
+            double minEval = 1000;
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    for (Piece currentPiece : pieces) {
+                        if (currentPiece.canMoveTo(j, i)) {
+                            oldX = currentPiece.getXCord();
+                            oldY = currentPiece.getYCord();
+                            target = chessBoard.Occupied(j, i);
+                            currentPiece.Move(j, i);
+
+                            currentEval = miniMax(depth - 1, true, board); //returns best previous move for black
+                            if (currentEval < minEval) {
+                                minEval = currentEval;
+                            }
+                            currentPiece.Move(oldX, oldY);
+                            if (target != null) {
+                                target.Move(j, i);
+                            }
+                        }
+                    }
+                }
+            }
+            return minEval;
+        }
+    }
+    public GamePaint getGamePaint(){
+        return game;
     }
 
 

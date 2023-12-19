@@ -36,9 +36,7 @@ public class Piece {
         return false;
     }
     public void Move(int xLocation, int yLocation){
-        if (chessBoard.Occupied(xLocation, yLocation) == this){
-            chessBoard.remove(this);
-        }
+        chessBoard.remove(this);
         chessBoard.place(this, xLocation, yLocation);
         moved = true;
         xCord = xLocation;
@@ -53,110 +51,97 @@ public class Piece {
     public boolean straightMove(int moveX, int moveY){
         int currentX = this.getXCord();
         int currentY = this.getYCord();
-        boolean flag = true;
 
-        if (currentX == moveX){ // if current X is the same as moveX that means that you would check for movement along the row
-            if (moveY >= currentY){ // if moving right
-                int frontY = currentY;
-                while (moveY > frontY && chessBoard.InBounds(moveX, frontY)){
-                    if (!canMove(currentX, frontY) && chessBoard.InBounds(moveX, frontY)){
-                        return false;
-                    }
-                    frontY++;
-                }
+        int smallerVal;
+        int largerVal;
 
+        // Fixed X Position
+        if (currentX == moveX){
+            if (currentY > moveY){
+                smallerVal = moveY;
+                largerVal = currentY;
             }
-            if (moveY <= currentY){ // if moving left
-                int frontY = currentY;
-                while (frontY >= moveY){
-                    if (!canMove(currentX, frontY)){
-                        return false;
-                    }
-                    frontY--;
-                }
-
+            else if (moveY> currentY){
+                smallerVal = currentY;
+                largerVal = moveY;
             }
+            else{ return false;}
+
+            // Loop to determine if any piece is between
+            // target location and this piece.
+            smallerVal++;
+            for(; smallerVal < largerVal; smallerVal++){
+                if (chessBoard.Occupied(currentX, smallerVal) != null){
+                    return false;
+                }
+            }
+            return true;
         }
-        if (currentY == moveY){ //check for movement along the column
-            int behindX = currentX;
-            if (moveX >= currentX && chessBoard.InBounds(behindX, currentY)){ //upward
-                while (moveX > behindX){
-                    if (!canMove(behindX, currentY)){
-                        return false;
-                    }
-                    behindX++;
-                }
-
+        // Fixed Y Position
+        if (currentY == moveY){
+            if (currentX > moveX){
+                smallerVal = moveX;
+                largerVal = currentX;
             }
-            if (moveX < currentX){ //downward
-                while (moveX <= behindX && chessBoard.InBounds(behindX, currentY)){
-                    if (!canMove(behindX, currentY)){
-                        return false;
-                    }
-                    behindX--;
-                }
-
+            else if (moveX > currentX){
+                smallerVal = currentX;
+                largerVal = moveX;
             }
+            else{ return false;}
+
+            //see if any piece inbetween
+            smallerVal++;
+            for(; smallerVal < largerVal; smallerVal++){
+                if (chessBoard.Occupied(smallerVal, currentY) != null){
+                    return false;
+                }
+            }
+            return true;
         }
-        return flag;
+
+        return false;
     }
     public boolean diagonalMove(int moveX, int moveY){
-        int currentX = this.getXCord();
-        int currentY = this.getYCord();
-        boolean flag = true;
-
+        int xStart = 0;
+        int yStart = 0;
+        int xFinish = 1;
         //Check if movement is diagonal
         int xTotal = Math.abs(moveX - this.getXCord());
         int yTotal = Math.abs(moveY - this.getYCord());
-        if(xTotal != yTotal){
-            return false;
-        } // because of the way double arrays are indexed the x value is actually the y value and y the x value
 
-        if (moveX > currentX && moveY > currentY){ // top right diagonals
-            int rightX = currentX;
-            int topY = currentY;
-            while(moveX >= rightX && moveY >= topY){
-                if (!canMove(rightX, topY)){
+        if (xTotal == yTotal){
+            if (moveX < this.getXCord()){
+                xStart = moveX;
+                xFinish = this.getXCord();
+            }
+            else if (moveX > this.getXCord()){
+                xStart = this.getXCord();
+                xFinish = moveX;
+            }
+            else {
+                return false;
+            }
+            if (moveY < this.getYCord()){
+                yStart = moveY;
+            }
+            else if (moveY > this.getYCord()){
+                yStart = this.getYCord();
+            }
+            else {
+                return false;
+            }
+            xStart++;
+            yStart++;
+            //check if any piece gets in teh way
+            for(;xStart < xFinish; xStart++, yStart++){
+                if (chessBoard.Occupied(xStart, yStart) != null){
                     return false;
                 }
-                topY++;
-                rightX++;
             }
+            return true;
         }
-        if (moveX < currentX && moveY < currentY){ // bottom left diagonals
-            int leftX = currentX;
-            int bottomY = currentY;
-            while(moveX <= leftX && moveY <= bottomY && chessBoard.InBounds(moveX, bottomY)){
-                if (!canMove(leftX, bottomY)){
-                    return false;
-                }
-                bottomY--;
-                leftX--;
-            }
-        }
-        if (moveX < currentX && moveY > currentY){ // bottom left diagonals
-            int leftX = currentX;
-            int topY = currentY;
-            while(moveX <= leftX && moveY >= topY && chessBoard.InBounds(moveX, topY)){
-                if (!canMove(leftX, topY)){
-                    return false;
-                }
-                topY++;
-                leftX--;
-            }
-        }
-        if (moveX > currentX && moveY < currentY){ // top right diagonals
-            int rightX = currentX;
-            int bottomY = currentY;
-            while(moveX >= rightX && moveY <= bottomY && chessBoard.InBounds(rightX, bottomY)){
-                if (!canMove(rightX, bottomY)){
-                    return false;
-                }
-                bottomY--;
-                rightX++;
-            }
-        }
-        return flag;
+
+        return false;
     }
 
 
