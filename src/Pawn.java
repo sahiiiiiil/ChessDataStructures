@@ -18,6 +18,7 @@ public class Pawn extends Piece {
                 return true;
             }
         }
+        System.out.println(moved);
         if(!moved){
             if (y - this.getYCord() == move2){ // because x checks the rows and pawns can only move up rows they can't switch columns
                 if (x == this.getXCord() && other == null){
@@ -27,8 +28,10 @@ public class Pawn extends Piece {
         }
         return false;
     }
+    @Override
     public boolean canMoveTo(int xPosition, int yPosition){
         if(canMove(xPosition,yPosition)){
+
             return pawnMoves(xPosition, yPosition);
         }
         return false;

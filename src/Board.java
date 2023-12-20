@@ -38,6 +38,12 @@ public class Board extends JPanel {
             chessBoard[x][y] = chessPiece;
         }
     }
+    public void placeMove(Piece chessPiece, int x, int y) {
+        if (InBounds(x,y)) {
+            chessBoard[x][y] = chessPiece;
+            Main.chess.game.chessPanel.repaint();
+        }
+    }
     public double evaluate(){
         double eval = 0;
         for(int i = 0; i <chessBoard.length;i++){
@@ -58,7 +64,7 @@ public class Board extends JPanel {
                    }
                }
                if (chessBoard[j][i] instanceof Knight){
-                    if (Occupied(j, i).getColor() == 3){
+                    if (Occupied(j, i).getColor() == 0){
                         eval-= 3;
                     } else{
                         eval+= 3;

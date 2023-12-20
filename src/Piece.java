@@ -37,10 +37,17 @@ public class Piece {
     }
     public void Move(int xLocation, int yLocation){
         chessBoard.remove(this);
-        chessBoard.place(this, xLocation, yLocation);
+        chessBoard.placeMove(this, xLocation, yLocation);
+        System.out.println("Moved was changed");
         moved = true;
         xCord = xLocation;
         yCord = yLocation;
+    }
+    public void MoveTest(int x, int y) {
+        chessBoard.remove(this);
+        chessBoard.placeMove(this, x, y);
+        xCord = x;
+        yCord = y;
     }
     public boolean onBoard(){
         if (chessBoard.InBounds(xCord, yCord)) {
@@ -154,6 +161,7 @@ public class Piece {
     public int getYCord(){
         return yCord;
     }
+    public boolean getMoved(){ return moved;}
 
 
 }
