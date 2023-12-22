@@ -1,11 +1,11 @@
 import java.awt.*;
 import java.util.*;
 public class Game { //the way the board is layed out the 0 coordinate for y starts at the top to bottom and x goes right to left
-    private int player;
+    private int player = 1;
     private LinkedList<Piece> blackPieces;
     private LinkedList<Piece> whitePieces;
     private King blackKing;
-    private Board chessBoard;
+    public Board chessBoard;
     private King whiteKing;
     private Queen blackQueen;
     private Queen whiteQueen;
@@ -37,7 +37,7 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
     private Pawn whitePawn6;
     private Pawn whitePawn7;
     private Pawn whitePawn8;
-    private GamePaint game;
+    public GamePaint game;
     Scanner userInput = new Scanner(System.in);
     public Game(){
 
@@ -147,8 +147,11 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
             }
             System.out.println();
         }
+    }
+    public void initializeGamePaint() {
         game = new GamePaint(chessBoard);
     }
+
     public void Run(){
         boolean color;
         if(player ==1){
@@ -156,12 +159,21 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
         } else{
             color = false;
         }
-
-        System.out.println(checkMate(player));
+        System.out.println("evaluate: " + chessBoard.evaluate());
+        int[] arr = new int[4];
+        System.out.println("minimax:" + miniMax(3, player==1, chessBoard, arr));
+        System.out.println(Arrays.toString(arr));
 
         player = 1;
 
         while (!gameFinished(player)){
+            if(chessBoard.evaluate() < -120){
+                System.out.println("Black Wins!");
+            }
+            if(chessBoard.evaluate() > 120){
+                System.out.println("White wins!");
+
+            }
             game.removeAll();
             game.revalidate();
             game.repaint();
@@ -171,8 +183,7 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
                 color = false;
             }
             System.out.println(player + ": 1 is white 0 is black");
-//            System.out.println("Mini Max:" +miniMax(4, color, chessBoard));
-//            System.out.println("Evaluate:" + chessBoard.evaluate());
+
 
             System.out.print("Which piece to move? X-loc: ");
             int nextX = userInput.nextInt();
@@ -192,14 +203,9 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
                 System.out.print("Y-loc: ");
                 nextY = userInput.nextInt();
                 System.out.println(target);
-                if (target.canMoveTo(nextX, nextY)){
+                if (target.canMoveTo(nextX, nextY)){ //something wrong with canMoveTo
                     System.out.println("nextY:" + nextY);
                     target.Move(nextX, nextY);
-                    for(int i = 0;i<8;i++){
-                        for(int j = 0; j<8;j++){
-                            System.out.println("square: " + j + i + blackQueen.canMoveTo(j,i));
-                        }
-                    }
                     for(int i = 0; i<8;i++){
                         for(int j =0; j <8;j++){
 
@@ -222,6 +228,9 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
                         }
                         System.out.println();
                     }
+                    System.out.println("evaluate: " + chessBoard.evaluate());
+                    System.out.println("minimax:" + miniMax(3, player==1, chessBoard, arr));
+                    System.out.println(Arrays.toString(arr));
 
                 }
 
@@ -233,8 +242,6 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
                 } else{
                     player = 1;
                 }
-                System.out.println("new x:" + target.getXCord());
-                System.out.println("new y: " + target.getYCord());
             }
         }
 
@@ -321,7 +328,7 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
         }
         return false;
     }
-    public double miniMax(int depth, boolean maximizing_player, Board board){
+    public double miniMax(int depth, boolean maximizing_player, Board board,int[] arr){
         LinkedList<Piece> pieces;
         int oldX;
         int oldY;
@@ -330,50 +337,67 @@ public class Game { //the way the board is layed out the 0 coordinate for y star
         if(depth == 0){
             return board.evaluate();
         }
-        if(maximizing_player) {
+        double evaluate = board.evaluate();
+        if(evaluate > 150 || evaluate <-150){
+            return evaluate;
+        }
+        if(maximizing_player) { // if white want to find highest value
             pieces = whitePieces;
             double maxEval = -1000;
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    for (Piece currentPiece : pieces) {
+                    for (Piece currentPiece : pieces) { // loops through all pieces moves them to a square and moves them back seeing if the evaluation gets better
                         if (currentPiece.canMoveTo(j, i)) {
                             oldX = currentPiece.getXCord();
                             oldY = currentPiece.getYCord();
                             target = chessBoard.Occupied(j, i);
-                            currentPiece.Move(j, i);
+                            currentPiece.MoveTest(j, i);
 
-                            currentEval = miniMax(depth - 1, false, board); //returns best previous move for black
-                            if (currentEval > maxEval) {
+                            currentEval = miniMax(depth - 1, false, board, null); //returns best previous move for black
+                            if (currentEval > maxEval ) {
                                 maxEval = currentEval;
+                                if(arr != null){
+                                    arr[0] = oldX;
+                                    arr[1] = oldY;
+                                    arr[2] = j;
+                                    arr[3] = i; //gets old and new x and y values of move
+                                }
+
                             }
-                            currentPiece.Move(oldX, oldY);
+                            currentPiece.MoveTest(oldX, oldY);
                             if (target != null) {
-                                target.Move(j, i);
+                                target.MoveTest(j, i);
                             }
                         }
                     }
                 }
             }
             return maxEval;
-        } else {
+        } else { //if black want to find loweest value;
             pieces = blackPieces;
             double minEval = 1000;
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    for (Piece currentPiece : pieces) {
+                    for (Piece currentPiece : pieces) { // loops through all pieces moves them to a square and moves them back seeing if the evaluation gets better
                         if (currentPiece.canMoveTo(j, i)) {
                             oldX = currentPiece.getXCord();
                             oldY = currentPiece.getYCord();
                             target = chessBoard.Occupied(j, i);
-                            currentPiece.Move(j, i);
+                            currentPiece.MoveTest(j, i);
 
-                            currentEval = miniMax(depth - 1, true, board); //returns best previous move for black
+                            currentEval = miniMax(depth - 1, true, board, null); //returns best previous move for black
                             if (currentEval < minEval) {
                                 minEval = currentEval;
+                                if(arr != null){ // so that it doesn't do it for the recursive miniMax calls
+                                    arr[0] = oldX;
+                                    arr[1] = oldY;
+                                    arr[2] = j;
+                                    arr[3] = i; //gets old and new x and y values of move
+                                }
                             }
-                            currentPiece.Move(oldX, oldY);
+                            currentPiece.MoveTest(oldX, oldY);
                             if (target != null) {
-                                target.Move(j, i);
+                                target.MoveTest(j, i);
                             }
                         }
                     }

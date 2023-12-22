@@ -38,7 +38,6 @@ public class Piece {
     public void Move(int xLocation, int yLocation){
         chessBoard.remove(this);
         chessBoard.placeMove(this, xLocation, yLocation);
-        System.out.println("Moved was changed");
         moved = true;
         xCord = xLocation;
         yCord = yLocation;
@@ -139,7 +138,7 @@ public class Piece {
             }
             xStart++;
             yStart++;
-            //check if any piece gets in teh way
+            //check if any piece gets in the way
             for(;xStart < xFinish; xStart++, yStart++){
                 if (chessBoard.Occupied(xStart, yStart) != null){
                     return false;
@@ -162,6 +161,7 @@ public class Piece {
         return yCord;
     }
     public boolean getMoved(){ return moved;}
+    public int setXCord(int x) {return xCord;}
 
 
 }

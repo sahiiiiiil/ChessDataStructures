@@ -17,8 +17,12 @@ public class Pawn extends Piece {
             if(x == this.getXCord() && other == null){ //checks there's no other piece occupying the square and that the y cord of the move is the same as the current because pawns can't move diagonally
                 return true;
             }
+            if(Math.abs(x-this.getXCord()) == 1 && other != null){
+                if(other.getColor() != this.getColor()){
+                    return true;
+                }
+            }
         }
-        System.out.println(moved);
         if(!moved){
             if (y - this.getYCord() == move2){ // because x checks the rows and pawns can only move up rows they can't switch columns
                 if (x == this.getXCord() && other == null){

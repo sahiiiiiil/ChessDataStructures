@@ -30,6 +30,7 @@ public class Board extends JPanel {
 
         if(InBounds(oldX,oldY)){
             chessBoard[oldX][oldY] = null;
+            piece.setXCord(-1);
         }
 
     }
@@ -44,7 +45,7 @@ public class Board extends JPanel {
             Main.chess.game.chessPanel.repaint();
         }
     }
-    public double evaluate(){
+    public double evaluate(){ // heuristic based evaluation method, evaluates which person on the board has more points/ pieces/ better pieces
         double eval = 0;
         for(int i = 0; i <chessBoard.length;i++){
             for(int j = 0; j < chessBoard[0].length; j++){
